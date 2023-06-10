@@ -5,7 +5,7 @@ int check(int first, int second)
 {
     if (second == 0)
     {
-        throw std::exception("Divide by zero exception!");
+        throw std::domain_error("Divide by zero exception!");
     }
     return first / second;
 }
@@ -34,14 +34,12 @@ int main()
     vec.y /= 2;
     std::cout << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
 
-    try
-    {
-        int test = check(10, 0);
-        std::cout << test << std::endl;
-    }
-    catch (const std::exception& err)
-    {
-        std::cout << "Catch " << err.what() << std::endl;
-    }
+    /*Vector3<int> vec3(7, 7, 7);
+    Vector3<int> vec2(std::move(vec3));
+    std::cout << vec2.x << ' ' << vec2.y << ' ' << vec2.z << std::endl;
+    vec2 = std::move(vec);
+    std::cout << vec2.x << ' ' << vec2.y << ' ' << vec2.z << std::endl;
+    std::cout << vec3.x << ' ' << vec3.y << ' ' << vec3.z << std::endl;*/
     
+    return 0;
 }
