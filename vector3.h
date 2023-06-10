@@ -70,8 +70,7 @@ Vector3<Type>::Vector3(const Vector3<Type>& other)
 template<typename Type>
 Vector3<Type>::Vector3(Vector3<Type>&& other) noexcept : x(0),y(0),z(0)
 {
-	Vector3& temp = *this;
-	moveSwap(temp, other);
+	moveSwap(*this, other);
 }
 
 template<typename Type>
@@ -91,11 +90,10 @@ Vector3<Type>& Vector3<Type>::operator=(Vector3<Type>&& other) noexcept
 {
 	if (this != &other)
 	{
-		Vector3& temp = *this;
-		temp.x = 0;
-		temp.y = 0;
-		temp.z = 0;
-		moveSwap(temp, other);
+		this->x = 0;
+		this->y = 0;
+		this->z = 0;
+		moveSwap(*this, other);
 	}
 	return *this;
 }
