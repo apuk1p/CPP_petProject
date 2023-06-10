@@ -34,8 +34,13 @@ int main()
     vec.y /= 2;
     std::cout << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
 
-    /*Vector3<int> vec3(7, 7, 7);
-    Vector3<int> vec2(std::move(vec3));
+    Vector3<int> vec3(7, 7, 7);
+    vec += vec3;
+    std::cout << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
+    Vector3<int> vec2(11, 11, 11);
+    vec = vec - vec2;
+    std::cout << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
+    /*Vector3<int> vec2(std::move(vec3));
     std::cout << vec2.x << ' ' << vec2.y << ' ' << vec2.z << std::endl;
     vec2 = std::move(vec);
     std::cout << vec2.x << ' ' << vec2.y << ' ' << vec2.z << std::endl;

@@ -21,10 +21,8 @@ public:
 	Vector3& operator=(const Vector3& other);
 	Vector3& operator=(Vector3&& other) noexcept;
 
-	Vector3& operator-(const Vector3& other);
 	Vector3& operator-=(const Vector3& other);
 
-	Vector3& operator+(const Vector3& other);
 	Vector3& operator+=(const Vector3& other);
 
 	Vector3& operator*(const Type value);
@@ -99,27 +97,33 @@ Vector3<Type>& Vector3<Type>::operator=(Vector3<Type>&& other) noexcept
 }
 
 template<typename Type>
-Vector3<Type>& Vector3<Type>::operator-(const Vector3& other)
+Vector3<Type> operator-(Vector3<Type> lhs, const Vector3<Type>& rhs)
 {
-	return (x - other.x, y - other.y, z - other.z);
+	return lhs -= rhs;
 }
 
 template<typename Type>
-Vector3<Type>& Vector3<Type>::operator-=(const Vector3& other)
+Vector3<Type>& Vector3<Type>::operator-=(const Vector3<Type>& other)
 {
-	return (x -= other.x, y -= other.y, z -= other.z);
+	x -= other.x;
+	y -= other.y;
+	z -= other.z;
+	return *this;
 }
 
 template<typename Type>
-Vector3<Type>& Vector3<Type>::operator+(const Vector3& other)
+Vector3<Type> operator+(Vector3<Type> lhs, const Vector3<Type>& rhs)
 {
-	return (x + other.x, y + other.y, z + other.z);
+	return lhs += rhs;
 }
 
 template<typename Type>
-Vector3<Type>& Vector3<Type>::operator+=(const Vector3& other)
+Vector3<Type>& Vector3<Type>::operator+=(const Vector3<Type>& other)
 {
-	return (x += other.x, y += other.y, z += other.z);
+	x += other.x;
+	y += other.y;
+	z += other.z;
+	return *this;
 }
 
 template<typename Type>
