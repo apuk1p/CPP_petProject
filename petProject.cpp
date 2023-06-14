@@ -19,46 +19,47 @@ int main()
     Vector3<float> vec3(7, 7, 7);
     std::cout << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
     std::cout << std::endl;
+
     //mul check
     vec.x *= 5;
     vec.z = vec.z * 3;
     vec.y *= 10;
-    std::cout << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
+    std::cout << "Mul " << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
     std::cout << std::endl;
 
     //sub check
     vec.x -= 3;
     vec.z = vec.z - 10;
     vec.y -= 35;
-    std::cout << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
+    std::cout << "Sub " << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
     std::cout << std::endl;
 
     //add check
     vec.x += 21;
     vec.z = vec.z + 2;
     vec.y += 11;
-    std::cout << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
+    std::cout << "Add " << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
     std::cout << std::endl;
 
     //div check
     vec.x /= 3;
     vec.z = vec.z / 2;
     vec.y /= 2;
-    std::cout << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
+    std::cout << "Div " << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
     std::cout << std::endl;
 
     //sub & add vectors check
     vec += vec3;
-    std::cout << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
+    std::cout << "Add vec " << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
     vec = vec - vec2;
-    std::cout << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
+    std::cout << "Sub vec " << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
     std::cout << std::endl;
 
     //move check
     Vector3<float> vec4(std::move(vec3));
     vec2 = std::move(vec);
-    std::cout << "Vec4 " << vec4.x << ' ' << vec4.y << ' ' << vec4.z << std::endl;
-    std::cout << "Vec2 " << vec2.x << ' ' << vec2.y << ' ' << vec2.z << std::endl;
+    std::cout << "Vec4 move " << vec4.x << ' ' << vec4.y << ' ' << vec4.z << std::endl;
+    std::cout << "Vec2 move " << vec2.x << ' ' << vec2.y << ' ' << vec2.z << std::endl;
     std::cout << std::endl;
 
     //normalize & magnitude check
@@ -68,7 +69,7 @@ int main()
     std::cout << "Vec2 normalize " << vec2.x << ' ' << vec2.y << ' ' << vec2.z << std::endl;
     std::cout << std::endl;
 
-    //check cross product
+    //check crossproduct
     Vector3<float> first(1, 0, 0);
     Vector3<float> second(0, 1, 0);
     Vector3<float> third;
@@ -83,7 +84,16 @@ int main()
     std::cout << "pivot X: " << pivot[0].x << ' ' << pivot[0].y << ' ' << pivot[0].z << std::endl;
     std::cout << "pivot Y: " << pivot[1].x << ' ' << pivot[1].y << ' ' << pivot[1].z << std::endl;
     std::cout << "pivot Z: " << pivot[2].x << ' ' << pivot[2].y << ' ' << pivot[2].z << std::endl;
+    std::cout << std::endl;
 
-    
+    //check dotproduct
+    Vector3<float> dpFirst(2, 1, 4);
+    Vector3<float> dpSecont(1, 5, 8);
+    //float cos = dpFirst.dotProduct(dpFirst, dpSecont);
+    float cos = dpFirst.dotProduct(dpFirst.normalize(), dpSecont.normalize());
+    std::cout << "normalize1 " << dpFirst.x << ' ' << dpFirst.y << ' ' << dpFirst.z << std::endl;
+    std::cout << "normalize2 " << dpSecont.x << ' ' << dpSecont.y << ' ' << dpSecont.z << std::endl;
+    std::cout << "Cos is: " << cos << std::endl;
+
     return 0;
 }

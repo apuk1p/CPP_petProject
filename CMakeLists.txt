@@ -5,14 +5,14 @@ project(Homework)
 set(CMAKE_CXX_STANDARD 17)
 set(CXX_STANDARD_REQUIRED TRUE)
 
-# if (MSVC)
-#     # warning level 4 and all warnings as errors
-#     add_compile_options(/W4 /WX)
-# else()
-#     # lots of warnings and all warnings as errors
-#     add_compile_options(-Wall -Wextra -pedantic -Werror -g)
-# endif()
-# link_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+if (MSVC)
+    # warning level 4 and all warnings as errors
+    add_compile_options(/W4 /WX)
+else()
+    # lots of warnings and all warnings as errors
+    add_compile_options(-Wall -Wextra -pedantic -Werror -g)
+endif()
+link_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 add_executable(${PROJECT_NAME} petProject.cpp)
 
 # enable_testing()
