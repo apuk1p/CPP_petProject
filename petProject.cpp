@@ -1,4 +1,5 @@
 #include "vector3.h"
+#include "matrix4x4.h"
 #include <stdio.h>
 #include <vector>
 
@@ -13,10 +14,19 @@ int check(int first, int second)
 
 int main()
 {
-    std::cout << "Hello World!\n";
-    Vector3<float> vec(3, 5, 2);
-    Vector3<float> vec2(11, 11, 11);
-    Vector3<float> vec3(7, 7, 7);
+    matrix4x4 check;
+    std::cout << "MATRIX!\n";
+    vector3<float> input;
+    std::cout << "Write x,y,z scale values" << std::endl;
+    std::cin >> input.x >> input.y >> input.z;
+    check.setScale(input);
+    vector3<float> mtxCheck = check.getScale();
+    std::cout << ' ' << mtxCheck.x << ' ' << mtxCheck.y << ' ' << mtxCheck.z << std::endl;
+
+    std::cout << "\nHello World!\n";
+    vector3<float> vec(3, 5, 2);
+    vector3<float> vec2(11, 11, 11);
+    vector3<float> vec3(7, 7, 7);
     std::cout << vec.x << ' ' << vec.y << ' ' << vec.z << std::endl;
     std::cout << std::endl;
 
@@ -56,7 +66,7 @@ int main()
     std::cout << std::endl;
 
     //move check
-    Vector3<float> vec4(std::move(vec3));
+    vector3<float> vec4(std::move(vec3));
     vec2 = std::move(vec);
     std::cout << "Vec4 move " << vec4.x << ' ' << vec4.y << ' ' << vec4.z << std::endl;
     std::cout << "Vec2 move " << vec2.x << ' ' << vec2.y << ' ' << vec2.z << std::endl;
@@ -70,12 +80,12 @@ int main()
     std::cout << std::endl;
 
     //check crossproduct
-    Vector3<float> first(1, 0, 0);
-    Vector3<float> second(0, 1, 0);
-    Vector3<float> third;
+    vector3<float> first(1, 0, 0);
+    vector3<float> second(0, 1, 0);
+    vector3<float> third;
     third.crossProduct(first, second);
 
-    std::vector<Vector3<float>> pivot;
+    std::vector<vector3<float>> pivot;
     pivot.reserve(3);
     pivot.push_back(first);
     pivot.push_back(second);
@@ -87,8 +97,8 @@ int main()
     std::cout << std::endl;
 
     //check dotproduct
-    Vector3<float> dpFirst(2, 1, 4);
-    Vector3<float> dpSecont(1, 5, 8);
+    vector3<float> dpFirst(2, 1, 4);
+    vector3<float> dpSecont(1, 5, 8);
     //float cos = dpFirst.dotProduct(dpFirst, dpSecont);
     float cos = dpFirst.dotProduct(dpFirst.normalize(), dpSecont.normalize());
     std::cout << "normalize1 " << dpFirst.x << ' ' << dpFirst.y << ' ' << dpFirst.z << std::endl;

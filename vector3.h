@@ -7,46 +7,46 @@
 #include <type_traits>
 
 template<typename Type>
-class Vector3
+class vector3
 {
 public:
 	Type x, y, z;
 
-	Vector3();
-	Vector3(Type x, Type y, Type z);
-	~Vector3();
+	vector3();
+	vector3(Type x, Type y, Type z);
+	~vector3();
 
-	Vector3(const Vector3& vec);
-	Vector3(Vector3&& vec) noexcept;
+	vector3(const vector3& vec);
+	vector3(vector3&& vec) noexcept;
 
-	Vector3& operator=(const Vector3& vec);
-	Vector3& operator=(Vector3&& vec) noexcept;
+	vector3& operator=(const vector3& vec);
+	vector3& operator=(vector3&& vec) noexcept;
 
-	Vector3& operator-=(const Vector3& vec);
-	Vector3& operator+=(const Vector3& vec);
+	vector3& operator-=(const vector3& vec);
+	vector3& operator+=(const vector3& vec);
 
-	Vector3& operator*=(const Type value);
-	Vector3& operator/=(const Type value);
+	vector3& operator*=(const Type value);
+	vector3& operator/=(const Type value);
 
-	void moveSwap(Vector3& vecF, Vector3& vecS);
+	void moveSwap(vector3& vecF, vector3& vecS);
 
 	float magnitude();
-	float magnitude(const Vector3<Type>& vec);
+	float magnitude(const vector3<Type>& vec);
 
-	Vector3& normalize();
-	Vector3& crossProduct(const Vector3& vecF, const Vector3& vecS);
-	float dotProduct(const Vector3& vecF, const Vector3& vecS);
+	vector3& normalize();
+	vector3& crossProduct(const vector3& vecF, const vector3& vecS);
+	float dotProduct(const vector3& vecF, const vector3& vecS);
 
 };
 
 template<typename Type>
-Vector3<Type>::Vector3() : x(0), y(0), z(0)
+vector3<Type>::vector3() : x(0), y(0), z(0)
 {
 	static_assert(!std::is_integral_v<Type>, "Type shouldn't be integer");
 }
 
 template<typename Type>
-Vector3<Type>::Vector3(Type x, Type y, Type z)
+vector3<Type>::vector3(Type x, Type y, Type z)
 {
 	if constexpr (std::is_floating_point_v<Type>)
 	{
@@ -61,10 +61,10 @@ Vector3<Type>::Vector3(Type x, Type y, Type z)
 }
 
 template<typename Type>
-Vector3<Type>::~Vector3() {}
+vector3<Type>::~vector3() {}
 
 template<typename Type>
-Vector3<Type>::Vector3(const Vector3<Type>& vec)
+vector3<Type>::vector3(const vector3<Type>& vec)
 {
 	x = vec.x;
 	y = vec.y;
@@ -72,13 +72,13 @@ Vector3<Type>::Vector3(const Vector3<Type>& vec)
 }
 
 template<typename Type>
-Vector3<Type>::Vector3(Vector3<Type>&& vec) noexcept : x(0),y(0),z(0)
+vector3<Type>::vector3(vector3<Type>&& vec) noexcept : x(0),y(0),z(0)
 {
 	moveSwap(*this, vec);
 }
 
 template<typename Type>
-Vector3<Type>& Vector3<Type>::operator=(const Vector3<Type>& vec)
+vector3<Type>& vector3<Type>::operator=(const vector3<Type>& vec)
 {
 	if (this != &vec)
 	{
@@ -90,7 +90,7 @@ Vector3<Type>& Vector3<Type>::operator=(const Vector3<Type>& vec)
 }
 
 template<typename Type>
-Vector3<Type>& Vector3<Type>::operator=(Vector3<Type>&& vec) noexcept
+vector3<Type>& vector3<Type>::operator=(vector3<Type>&& vec) noexcept
 {
 	if (this != &vec)
 	{
@@ -103,13 +103,14 @@ Vector3<Type>& Vector3<Type>::operator=(Vector3<Type>&& vec) noexcept
 }
 
 template<typename Type>
-Vector3<Type> operator-(Vector3<Type> lhs, const Vector3<Type>& rhs)
+vector3<Type> operator-(vector3<Type> lhs, const vector3<Type>& rhs)
 {
-	return lhs -= rhs;
+	vector3 newVec(lhs);
+	return newVec -= rhs;
 }
 
 template<typename Type>
-Vector3<Type>& Vector3<Type>::operator-=(const Vector3<Type>& vec)
+vector3<Type>& vector3<Type>::operator-=(const vector3<Type>& vec)
 {
 	x -= vec.x;
 	y -= vec.y;
@@ -118,13 +119,14 @@ Vector3<Type>& Vector3<Type>::operator-=(const Vector3<Type>& vec)
 }
 
 template<typename Type>
-Vector3<Type> operator+(Vector3<Type> lhs, const Vector3<Type>& rhs)
+vector3<Type> operator+(vector3<Type> lhs, const vector3<Type>& rhs)
 {
-	return lhs += rhs;
+	vector3 newVec(lhs);
+	return newVec += rhs;
 }
 
 template<typename Type>
-Vector3<Type>& Vector3<Type>::operator+=(const Vector3<Type>& vec)
+vector3<Type>& vector3<Type>::operator+=(const vector3<Type>& vec)
 {
 	x += vec.x;
 	y += vec.y;
@@ -133,13 +135,14 @@ Vector3<Type>& Vector3<Type>::operator+=(const Vector3<Type>& vec)
 }
 
 template<typename Type>
-Vector3<Type> operator*(Vector3<Type> vec, const Type value)
+vector3<Type> operator*(vector3<Type> vec, const Type value)
 {
-	return vec *= value;
+	vector3 newVec(vec);
+	return newVec *= value;
 }
 
 template<typename Type>
-Vector3<Type>& Vector3<Type>::operator*=(const Type value)
+vector3<Type>& vector3<Type>::operator*=(const Type value)
 {
 	x *= value;
 	y *= value;
@@ -148,14 +151,19 @@ Vector3<Type>& Vector3<Type>::operator*=(const Type value)
 }
 
 template<typename Type>
-Vector3<Type> operator/(Vector3<Type> vec, const Type value)
+vector3<Type> operator/(vector3<Type> vec, const Type value)
 {
 	_ASSERT(value != 0);
-	return vec /= value;
+	/*if (value == 0)
+	{
+		throw std::domain_error("Divide by zero exception!");
+	}*/
+	vector3 newVec(vec);
+	return newVec /= value;
 }
 
 template<typename Type>
-Vector3<Type>& Vector3<Type>::operator/=(const Type value)
+vector3<Type>& vector3<Type>::operator/=(const Type value)
 {
 	/*if (value == 0)
 	{
@@ -169,7 +177,7 @@ Vector3<Type>& Vector3<Type>::operator/=(const Type value)
 }
 
 template<typename Type>
-void Vector3<Type>::moveSwap(Vector3<Type>& vecF, Vector3<Type>& vecS)
+void vector3<Type>::moveSwap(vector3<Type>& vecF, vector3<Type>& vecS)
 {
 	std::swap(vecF.x, vecS.x);
 	std::swap(vecF.y, vecS.y);
@@ -177,21 +185,21 @@ void Vector3<Type>::moveSwap(Vector3<Type>& vecF, Vector3<Type>& vecS)
 }
 
 template<typename Type>
-float Vector3<Type>::magnitude()
+float vector3<Type>::magnitude()
 {
-	float length = std::sqrtf((x * x) + (y * y) + (z * z)); 
+	float length= std::sqrtf((x * x) + (y * y) + (z * z)); 
 	return length;
 }
 
 template<typename Type>
-float Vector3<Type>::magnitude(const Vector3<Type>& vec)
+float vector3<Type>::magnitude(const vector3<Type>& vec)
 {
 	float length = std::sqrtf((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
 	return length;
 }
 
 template<typename Type>
-Vector3<Type>& Vector3<Type>::normalize()
+vector3<Type>& vector3<Type>::normalize()
 {
 	float length = this->magnitude();
 	x /= length;
@@ -202,7 +210,7 @@ Vector3<Type>& Vector3<Type>::normalize()
 }
 
 template<typename Type>
-Vector3<Type>& Vector3<Type>::crossProduct(const Vector3& vecF, const Vector3& vecS)
+vector3<Type>& vector3<Type>::crossProduct(const vector3& vecF, const vector3& vecS)
 {
 	x = vecF.y * vecS.z - vecF.z * vecS.y;
 	y = vecF.z * vecS.x - vecF.x * vecS.z;
@@ -212,7 +220,7 @@ Vector3<Type>& Vector3<Type>::crossProduct(const Vector3& vecF, const Vector3& v
 }
 
 template<typename Type>
-float Vector3<Type>::dotProduct(const Vector3& vecF, const Vector3& vecS)
+float vector3<Type>::dotProduct(const vector3& vecF, const vector3& vecS)
 {
 	float dot;
 	float mulVec = vecF.x * vecS.x + vecF.y * vecS.y + vecF.z * vecS.z;
