@@ -9,20 +9,27 @@ class matrix4x4
 {
 public:
 	matrix4x4();
+	~matrix4x4();
 	matrix4x4(const matrix4x4& rhs);
 	matrix4x4(matrix4x4&& rhs) noexcept;
-	~matrix4x4();
 
 	matrix4x4& operator=(const matrix4x4& rhs);
-	matrix4x4& operator=(matrix4x4&& rhs);
+	matrix4x4& operator=(matrix4x4&& rhs) noexcept;
+	float& operator[](const std::size_t index);
 
-	vector3<float> getScale();
+	//set values
 	void setScale(const vector3<float>& vec);
-	//position
+	void setTransform(const vector3<float>& vec);
+
+	//get values
+	vector3<float> getScale() const;
+	vector3<float> getTransform() const;
+
 	//rotation
-	//
-	
+
 	void showMatrix();
+	void forMethod(const matrix4x4& other);
+	void cleanArr();
 	
 private:
 	std::array<float, 16> mtxData;
@@ -41,36 +48,73 @@ matrix4x4::matrix4x4()
 
 matrix4x4::matrix4x4(const matrix4x4& rhs)
 {
-	int counter = 0;
-	for (const auto& val : rhs.mtxData)
-	{
-		mtxData[counter] = val;
-		++counter;
-	}
+	forMethod(rhs);
 }
 
 matrix4x4::matrix4x4(matrix4x4&& rhs) noexcept
 {
-	for (auto& val : mtxData)
-	{
-		val = 0;
-	}
+	cleanArr();
 	std::swap(mtxData, rhs.mtxData);
 }
 
-matrix4x4::~matrix4x4() { std::cout << "matrix destructor" << std::endl; }
+matrix4x4::~matrix4x4() {}
 
-vector3<float> matrix4x4::getScale()
+
+matrix4x4& matrix4x4::operator=(const matrix4x4& right)
 {
-	vector3 newVec(mtxData[0], mtxData[5], mtxData[10]);
-	return newVec;
+	if (this != &right)
+	{
+		forMethod(right);
+	}
+	return *this;
 }
+
+matrix4x4& matrix4x4::operator=(matrix4x4&& right) noexcept
+{
+	if (this != &right)
+	{
+		cleanArr();
+		std::swap(mtxData, right.mtxData);
+	}
+
+	return *this;
+}
+
+float& matrix4x4::operator[](const std::size_t index)
+{
+	if (index + 1 > mtxData.size())
+	{
+		throw std::out_of_range("INDEX OUT OF RANGE");
+	}
+	return mtxData[index];
+}
+
 
 void matrix4x4::setScale(const vector3<float>& vec)
 {
 	mtxData[0] = vec.x;
 	mtxData[5] = vec.y;
 	mtxData[10] = vec.z;
+}
+
+void matrix4x4::setTransform(const vector3<float>& vec)
+{
+	mtxData[3] = vec.x;
+	mtxData[7] = vec.y;
+	mtxData[11] = vec.z;
+}
+
+
+vector3<float> matrix4x4::getScale() const
+{
+	vector3 newVec(mtxData[0], mtxData[5], mtxData[10]);
+	return newVec;
+}
+
+vector3<float> matrix4x4::getTransform() const
+{
+	vector3 newVec(mtxData[3], mtxData[7], mtxData[11]);
+	return newVec;
 }
 
 void matrix4x4::showMatrix()
@@ -84,5 +128,23 @@ void matrix4x4::showMatrix()
 			std::cout << '\n' << std::endl;
 		}
 		++counter;
+	}
+}
+
+void matrix4x4::forMethod(const matrix4x4& other)
+{
+	int counter = 0;
+	for (const auto& val : other.mtxData)
+	{
+		this->mtxData[counter] = val;
+		++counter;
+	}
+}
+
+void matrix4x4::cleanArr()
+{
+	for (auto& val : this->mtxData)
+	{
+		val = 0;
 	}
 }

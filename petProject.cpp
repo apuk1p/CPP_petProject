@@ -3,27 +3,20 @@
 #include <stdio.h>
 #include <vector>
 
-int check(int first, int second)
-{
-    if (second == 0)
-    {
-        throw std::domain_error("Divide by zero exception!");
-    }
-    return first / second;
-}
-
 int main()
 {
     matrix4x4 check;
     //std::cout << "Write x,y,z scale values" << std::endl;
     //std::cin >> input.x >> input.y >> input.z;
     matrix4x4 newCheck(check);
-    newCheck.setScale(vector3<float>(1, 5, 3));
+    //newCheck.setScale(vector3<float>(1, 5, 3));
     vector3<float> input(3,5,1);
     check.setScale(input);
+    check.setTransform(vector3<float>(3.f, 11.f, 0.5f));
     //matrix4x4 newCheck(std::move(check)); //move ctor check
     vector3<float> mtxCheck = check.getScale();
     vector3<float> mtxCheck1 = newCheck.getScale();
+    newCheck.setTransform(vector3<float>(1.25f, 5.f, 0.95f));
     //std::cout << "mtxCheck  " << mtxCheck.x << ' ' << mtxCheck.y << ' ' << mtxCheck.z << std::endl;
     //std::cout << "mtxCheck1 " << mtxCheck1.x << ' ' << mtxCheck1.y << ' ' << mtxCheck1.z << std::endl;
     std::cout << "CHECK MATRIX" << std::endl;
@@ -31,6 +24,14 @@ int main()
     std::cout << std::endl;
     std::cout << "NEW CHECK MATRIX" << std::endl;
     newCheck.showMatrix();
+    try
+    {
+        std::cout << "Transform x is " << newCheck[17] << std::endl;
+    }
+    catch (const std::out_of_range& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
 
     //std::cout << "\nHello World!\n";
     //vector3<float> vec(3, 5, 2);
