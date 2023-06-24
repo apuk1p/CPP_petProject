@@ -1,9 +1,8 @@
 #pragma once
 
-#include <iostream>
 #include <array>
-#include "vector3.h"
 #include <memory>
+#include "vector3.h"
 
 class matrix4x4
 {
@@ -13,8 +12,15 @@ public:
 	matrix4x4(const matrix4x4& rhs);
 	matrix4x4(matrix4x4&& rhs) noexcept;
 
+	//operators
 	matrix4x4& operator=(const matrix4x4& rhs);
 	matrix4x4& operator=(matrix4x4&& rhs) noexcept;
+	matrix4x4& operator+=(const matrix4x4& rhs);
+	matrix4x4& operator-=(const matrix4x4& rhs);
+	matrix4x4& operator*=(const matrix4x4& rhs);
+
+	template<typename Type>
+	matrix4x4& operator*=(const Type& value);
 	float& operator[](const std::size_t index);
 
 	//set values
@@ -27,7 +33,7 @@ public:
 
 	//rotation
 
-	void showMatrix();
+	void showMatrix() const;
 	void forMethod(const matrix4x4& other);
 	void cleanArr();
 	
@@ -60,24 +66,131 @@ matrix4x4::matrix4x4(matrix4x4&& rhs) noexcept
 matrix4x4::~matrix4x4() {}
 
 
-matrix4x4& matrix4x4::operator=(const matrix4x4& right)
+matrix4x4& matrix4x4::operator=(const matrix4x4& rhs)
 {
-	if (this != &right)
+	if (this != &rhs)
 	{
-		forMethod(right);
+		forMethod(rhs);
 	}
 	return *this;
 }
 
-matrix4x4& matrix4x4::operator=(matrix4x4&& right) noexcept
+matrix4x4& matrix4x4::operator=(matrix4x4&& rhs) noexcept
 {
-	if (this != &right)
+	if (this != &rhs)
 	{
 		cleanArr();
-		std::swap(mtxData, right.mtxData);
+		std::swap(mtxData, rhs.mtxData);
 	}
 
 	return *this;
+}
+
+matrix4x4& matrix4x4::operator+=(const matrix4x4& rhs)
+{
+	for (int i = 0; i < rhs.mtxData.size(); i++)
+	{
+		mtxData[i] += rhs.mtxData[i];
+	}
+
+	return *this;
+}
+
+matrix4x4& matrix4x4::operator-=(const matrix4x4& rhs)
+{
+	for (int i = 0; i < rhs.mtxData.size(); i++)
+	{
+		mtxData[i] -= rhs.mtxData[i];
+	}
+
+	return *this;
+}
+
+matrix4x4 operator+(const matrix4x4& lhs, const matrix4x4& rhs)
+{
+	matrix4x4 newAddMtx(lhs);
+	newAddMtx += rhs;
+	return newAddMtx;
+}
+
+matrix4x4 operator-(const matrix4x4& lhs, const matrix4x4& rhs)
+{
+	matrix4x4 newSubMtx(lhs);
+	newSubMtx -= rhs;
+	return newSubMtx;
+}
+
+matrix4x4& matrix4x4::operator*=(const matrix4x4& rhs)
+{
+	std::size_t startClm = 0;
+	std::size_t columnShift = 0;
+
+	std::size_t newMtxIt = 0;
+	matrix4x4 newMatrix;
+	float mulResult = 0;
+
+	for (std::size_t i = 0; i < mtxData.size();)
+	{
+		std::size_t lineCtr = i;
+
+		for (std::size_t b = 0; b < mtxData.size(); ++b)
+		{
+			if (b % 4 == 0 && b != 0)
+			{
+				//shift start column line
+				++startClm;
+				columnShift = startClm;
+				//shift line
+				lineCtr = i;
+				
+				//write value to new matrix
+				newMatrix[newMtxIt] = mulResult;
+				mulResult = 0;
+				++newMtxIt;
+			}
+
+			if (b % 4 == 0 || b == 0)
+			{
+				mulResult += mtxData[lineCtr] * rhs.mtxData[columnShift];
+			}
+			else
+			{
+				columnShift += 4;
+				mulResult += mtxData[lineCtr] * rhs.mtxData[columnShift];
+			}
+			++lineCtr;
+		}
+		//write the last cicle value after b = 15
+		newMatrix[newMtxIt] = mulResult;
+		mulResult = 0;
+		++newMtxIt;
+
+		//reset value of second mtx
+		startClm = 0;
+		columnShift = 0;
+		i += 4;
+	}
+
+	this->mtxData = newMatrix.mtxData;
+	return *this;
+}
+
+template<typename Type>
+matrix4x4& matrix4x4::operator*=(const Type& value)
+{
+	for (int i = 0; i < mtxData.size(); i++)
+	{
+		mtxData[i] *= value;
+	}
+	return *this;
+}
+
+template<typename Type>
+matrix4x4 operator*(const matrix4x4& lhs, const Type& value)
+{
+	matrix4x4 newMulMtx(lhs);
+	newMulMtx *= value;
+	return newMulMtx;
 }
 
 float& matrix4x4::operator[](const std::size_t index)
@@ -117,33 +230,37 @@ vector3<float> matrix4x4::getTransform() const
 	return newVec;
 }
 
-void matrix4x4::showMatrix()
+void matrix4x4::showMatrix() const
 {
 	int counter = 1;
-	for (auto& val : mtxData)
+	for (const auto& val : mtxData)
 	{
-		std::cout << val << '\t';
-		if (counter % 4 == 0)
+		std::cout << val << "  ";
+		if ( counter % 4 == 0)
 		{
-			std::cout << '\n' << std::endl;
+			std::cout << std::endl;
 		}
-		++counter;
+		counter++;
 	}
 }
 
 void matrix4x4::forMethod(const matrix4x4& other)
 {
-	int counter = 0;
+	for (int i = 0; i < other.mtxData.size(); i++)
+	{
+		mtxData[i] = other.mtxData[i];
+	}
+	/*int counter = 0;
 	for (const auto& val : other.mtxData)
 	{
-		this->mtxData[counter] = val;
+		mtxData[counter] = val;
 		++counter;
-	}
+	}*/
 }
 
 void matrix4x4::cleanArr()
 {
-	for (auto& val : this->mtxData)
+	for (auto& val : mtxData)
 	{
 		val = 0;
 	}

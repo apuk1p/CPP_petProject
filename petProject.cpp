@@ -1,6 +1,5 @@
 #include "vector3.h"
 #include "matrix4x4.h"
-#include <stdio.h>
 #include <vector>
 
 int main()
@@ -10,23 +9,27 @@ int main()
     //std::cin >> input.x >> input.y >> input.z;
     matrix4x4 newCheck(check);
     //newCheck.setScale(vector3<float>(1, 5, 3));
-    vector3<float> input(3,5,1);
+    vector3<float> input(1.52f,3.22f,1.42f);
     check.setScale(input);
-    check.setTransform(vector3<float>(3.f, 11.f, 0.5f));
+    check.setTransform(vector3<float>(5.512f, 5.21f, 0.5f));
     //matrix4x4 newCheck(std::move(check)); //move ctor check
     vector3<float> mtxCheck = check.getScale();
     vector3<float> mtxCheck1 = newCheck.getScale();
-    newCheck.setTransform(vector3<float>(1.25f, 5.f, 0.95f));
-    //std::cout << "mtxCheck  " << mtxCheck.x << ' ' << mtxCheck.y << ' ' << mtxCheck.z << std::endl;
-    //std::cout << "mtxCheck1 " << mtxCheck1.x << ' ' << mtxCheck1.y << ' ' << mtxCheck1.z << std::endl;
-    std::cout << "CHECK MATRIX" << std::endl;
+    newCheck.setTransform(vector3<float>(1.25f, 5.32f, 2.95f));
+    std::cout << "check MATRIX" << std::endl;
     check.showMatrix();
     std::cout << std::endl;
-    std::cout << "NEW CHECK MATRIX" << std::endl;
+    std::cout << "newCheck MATRIX" << std::endl;
     newCheck.showMatrix();
+
+
+    newCheck *= check;
+    std::cout << "check MATRIX AFTER" << std::endl;
+    newCheck.showMatrix();
+
     try
     {
-        std::cout << "Transform x is " << newCheck[17] << std::endl;
+        std::cout << "Transform x is " << newCheck[15] << std::endl;
     }
     catch (const std::out_of_range& e)
     {
