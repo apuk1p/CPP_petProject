@@ -30,8 +30,7 @@ public:
 
 	void moveSwap(vector3& vecF, vector3& vecS);
 
-	float magnitude();
-	float magnitude(const vector3<Type>& vec);
+	float magnitude() const;
 
 	vector3& normalize();
 	vector3& crossProduct(const vector3& vecF, const vector3& vecS);
@@ -103,7 +102,7 @@ vector3<Type>& vector3<Type>::operator=(vector3<Type>&& vec) noexcept
 }
 
 template<typename Type>
-vector3<Type> operator-(vector3<Type> lhs, const vector3<Type>& rhs)
+vector3<Type> operator-(const vector3<Type> lhs, const vector3<Type>& rhs)
 {
 	vector3 newVec(lhs);
 	return newVec -= rhs;
@@ -119,7 +118,7 @@ vector3<Type>& vector3<Type>::operator-=(const vector3<Type>& vec)
 }
 
 template<typename Type>
-vector3<Type> operator+(vector3<Type> lhs, const vector3<Type>& rhs)
+vector3<Type> operator+(const vector3<Type> lhs, const vector3<Type>& rhs)
 {
 	vector3 newVec(lhs);
 	return newVec += rhs;
@@ -185,16 +184,9 @@ void vector3<Type>::moveSwap(vector3<Type>& vecF, vector3<Type>& vecS)
 }
 
 template<typename Type>
-float vector3<Type>::magnitude()
+float vector3<Type>::magnitude() const
 {
 	float length= std::sqrtf((x * x) + (y * y) + (z * z)); 
-	return length;
-}
-
-template<typename Type>
-float vector3<Type>::magnitude(const vector3<Type>& vec)
-{
-	float length = std::sqrtf((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
 	return length;
 }
 
@@ -231,7 +223,7 @@ float vector3<Type>::dotProduct(const vector3& vecF, const vector3& vecS)
 	}
 	else
 	{
-		float mulMgnt = magnitude(vecF) * magnitude(vecS);
+		float mulMgnt = vecF.magnitude() * vecS.magnitude();
 		dot = mulVec / mulMgnt;
 		return dot;
 	}

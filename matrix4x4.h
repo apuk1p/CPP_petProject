@@ -8,13 +8,13 @@ class matrix4x4
 {
 public:
 	matrix4x4();
-	~matrix4x4();
+	~matrix4x4() = default;
 	matrix4x4(const matrix4x4& rhs);
-	matrix4x4(matrix4x4&& rhs) noexcept;
+
+	//std::array doesn' support move semantic
 
 	//operators
 	matrix4x4& operator=(const matrix4x4& rhs);
-	matrix4x4& operator=(matrix4x4&& rhs) noexcept;
 	matrix4x4& operator+=(const matrix4x4& rhs);
 	matrix4x4& operator-=(const matrix4x4& rhs);
 	matrix4x4& operator*=(const matrix4x4& rhs);
@@ -22,6 +22,10 @@ public:
 	template<typename Type>
 	matrix4x4& operator*=(const Type& value);
 	float& operator[](const std::size_t index);
+	const float& operator[](const std::size_t index) const;
+
+	float& operator()(std::size_t r, std::size_t c);
+	const float& operator()(std::size_t r, std::size_t c) const;
 
 	//set values
 	void setScale(const vector3<float>& vec);
@@ -33,15 +37,17 @@ public:
 
 	//rotation
 
+	std::size_t index(std::size_t r, std::size_t c) const;
 	void showMatrix() const;
 	void forMethod(const matrix4x4& other);
-	void cleanArr();
 	
 private:
 	std::array<float, 16> mtxData;
+	std::size_t row;
+	std::size_t column;
 };
 
-matrix4x4::matrix4x4()
+matrix4x4::matrix4x4() : row(4), column(4)
 {
 	mtxData =
 	{
@@ -55,15 +61,9 @@ matrix4x4::matrix4x4()
 matrix4x4::matrix4x4(const matrix4x4& rhs)
 {
 	forMethod(rhs);
+	row = rhs.row;
+	column = rhs.column;
 }
-
-matrix4x4::matrix4x4(matrix4x4&& rhs) noexcept
-{
-	cleanArr();
-	std::swap(mtxData, rhs.mtxData);
-}
-
-matrix4x4::~matrix4x4() {}
 
 
 matrix4x4& matrix4x4::operator=(const matrix4x4& rhs)
@@ -71,18 +71,9 @@ matrix4x4& matrix4x4::operator=(const matrix4x4& rhs)
 	if (this != &rhs)
 	{
 		forMethod(rhs);
+		row = rhs.row;
+		column = rhs.column;
 	}
-	return *this;
-}
-
-matrix4x4& matrix4x4::operator=(matrix4x4&& rhs) noexcept
-{
-	if (this != &rhs)
-	{
-		cleanArr();
-		std::swap(mtxData, rhs.mtxData);
-	}
-
 	return *this;
 }
 
@@ -122,53 +113,18 @@ matrix4x4 operator-(const matrix4x4& lhs, const matrix4x4& rhs)
 
 matrix4x4& matrix4x4::operator*=(const matrix4x4& rhs)
 {
-	std::size_t startClm = 0;
-	std::size_t columnShift = 0;
-
-	std::size_t newMtxIt = 0;
 	matrix4x4 newMatrix;
-	float mulResult = 0;
-
-	for (std::size_t i = 0; i < mtxData.size();)
+	std::fill(newMatrix.mtxData.begin(), newMatrix.mtxData.end(), 0.0f);
+	
+	for (std::size_t r = 0; r < row; ++r)
 	{
-		std::size_t lineCtr = i;
-
-		for (std::size_t b = 0; b < mtxData.size(); ++b)
+		for (std::size_t j = 0; j < column; ++j)
 		{
-			if (b % 4 == 0 && b != 0)
+			for (std::size_t c = 0; c < column; ++c)
 			{
-				//shift start column line
-				++startClm;
-				columnShift = startClm;
-				//shift line
-				lineCtr = i;
-				
-				//write value to new matrix
-				newMatrix[newMtxIt] = mulResult;
-				mulResult = 0;
-				++newMtxIt;
+				newMatrix[index(r, j)] += mtxData[index(r, c)] * rhs.mtxData[index(c, j)];
 			}
-
-			if (b % 4 == 0 || b == 0)
-			{
-				mulResult += mtxData[lineCtr] * rhs.mtxData[columnShift];
-			}
-			else
-			{
-				columnShift += 4;
-				mulResult += mtxData[lineCtr] * rhs.mtxData[columnShift];
-			}
-			++lineCtr;
 		}
-		//write the last cicle value after b = 15
-		newMatrix[newMtxIt] = mulResult;
-		mulResult = 0;
-		++newMtxIt;
-
-		//reset value of second mtx
-		startClm = 0;
-		columnShift = 0;
-		i += 4;
 	}
 
 	this->mtxData = newMatrix.mtxData;
@@ -202,6 +158,32 @@ float& matrix4x4::operator[](const std::size_t index)
 	return mtxData[index];
 }
 
+const float& matrix4x4::operator[](const std::size_t index) const
+{
+	if (index + 1 > mtxData.size())
+	{
+		throw std::out_of_range("INDEX OUT OF RANGE");
+	}
+	return mtxData[index];
+}
+
+float& matrix4x4::operator()(std::size_t r, std::size_t c)
+{
+	//if (r < row && c < mtxData.size() / r)
+	//{
+	//	throw std::out_of_range("INDEX OUT OF RANGE");
+	//}
+	return mtxData[index(r, c)];
+}
+
+const float& matrix4x4::operator()(std::size_t r, std::size_t c) const
+{
+	//if (r < row && c < mtxData.size() / r)
+	//{
+	//	throw std::out_of_range("INDEX OUT OF RANGE");
+	//}
+	return mtxData[index(r, c)];
+}
 
 void matrix4x4::setScale(const vector3<float>& vec)
 {
@@ -250,18 +232,15 @@ void matrix4x4::forMethod(const matrix4x4& other)
 	{
 		mtxData[i] = other.mtxData[i];
 	}
-	/*int counter = 0;
-	for (const auto& val : other.mtxData)
-	{
-		mtxData[counter] = val;
-		++counter;
-	}*/
+	//int counter = 0;
+	//for (const auto& val : other.mtxData)
+	//{
+	//	mtxData[counter] = val;
+	//	++counter;
+	//}
 }
 
-void matrix4x4::cleanArr()
+std::size_t matrix4x4::index(std::size_t r, std::size_t c) const
 {
-	for (auto& val : mtxData)
-	{
-		val = 0;
-	}
+	return r * column + c;
 }
